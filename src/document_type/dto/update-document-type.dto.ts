@@ -7,22 +7,26 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateDocumentType {
-  @IsString()
-  @IsNotEmpty()
-  long_name!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  short_name!: string;
-
+export class UpdateDocumentType {
   @IsNumber()
   @IsNotEmpty()
+  id!: number;
+
+  @IsOptional()
+  @IsString()
+  long_name!: string;
+
+  @IsOptional()
+  @IsString()
+  short_name!: string;
+
+  @IsOptional()
+  @IsNumber()
   @Min(0)
   character_count!: number;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   code!: string;
 
   @IsOptional()

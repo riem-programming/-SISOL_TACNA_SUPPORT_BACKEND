@@ -18,14 +18,17 @@ export class DocumentType {
   short_name!: string;
 
   @Column()
-  charcter_count!: number;
+  character_count!: number;
 
   @Column()
   code!: string;
 
+  @Column({ type: 'boolean', default: true })
+  is_active!: boolean;
+
   @CreateDateColumn()
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updateddAt!: Date;
 }
