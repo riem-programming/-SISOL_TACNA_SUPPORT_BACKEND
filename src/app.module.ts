@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DocumentTypeModule } from './document_type/document_type.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StateModule } from './state/state.module';
+import { PriorityModule } from './priority/priority.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
     }),
     DocumentTypeModule,
+    StateModule,
+    PriorityModule,
   ],
   controllers: [],
   providers: [],
