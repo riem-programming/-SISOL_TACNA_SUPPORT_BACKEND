@@ -6,23 +6,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'document_type' })
-export class DocumentType {
+@Entity({ name: 'request_type' })
+export class RequestType {
   @PrimaryGeneratedColumn()
   id!: number;
-
-  @Column()
-  long_name!: string;
 
   @Column()
   short_name!: string;
 
   @Column()
-  character_count!: number;
+  long_name!: string;
 
-  @Column({
-    unique: true,
-  })
+  @Column({ unique: true })
   code!: string;
 
   @Column({ type: 'boolean', default: true })

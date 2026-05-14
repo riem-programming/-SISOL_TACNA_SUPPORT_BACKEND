@@ -3,6 +3,7 @@ import { DocumentTypeModule } from './document_type/document_type.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StateModule } from './state/state.module';
 import { PriorityModule } from './priority/priority.module';
+import { RequestTypeModule } from './request_type/request_type.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PriorityModule } from './priority/priority.module';
     DocumentTypeModule,
     StateModule,
     PriorityModule,
+    RequestTypeModule,
   ],
   controllers: [],
   providers: [],

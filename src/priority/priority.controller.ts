@@ -56,7 +56,7 @@ export class PriorityController {
   async deletePriority(@Param('id') id: number) {
     const deletePriority = await this.priorityService.deletePriority(id);
     if (!deletePriority) {
-      throw new NotFoundException('No existe el tipo de documento');
+      throw new NotFoundException(this.notFoundMessage);
     }
     return deletePriority;
   }

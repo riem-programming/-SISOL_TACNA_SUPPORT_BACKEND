@@ -52,7 +52,7 @@ export class StateController {
   async deleteState(@Param('id') id: number) {
     const deletestate = await this.stateService.deleteState(id);
     if (!deletestate) {
-      throw new NotFoundException('No existe el tipo de documento');
+      throw new NotFoundException('No existe el estado');
     }
     return deletestate;
   }
