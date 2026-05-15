@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StateModule } from './state/state.module';
 import { PriorityModule } from './priority/priority.module';
 import { RequestTypeModule } from './request_type/request_type.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RequestTypeModule } from './request_type/request_type.module';
     StateModule,
     PriorityModule,
     RequestTypeModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],
