@@ -21,7 +21,7 @@ export class CreateTicket {
 
   @IsNumber()
   @IsNotEmpty()
-  created_by!: number;
+  user_id!: number;
 
   @IsOptional()
   @IsBoolean()

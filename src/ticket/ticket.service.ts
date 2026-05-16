@@ -8,6 +8,7 @@ import { State } from 'src/state/state.entity';
 import { Priority } from 'src/priority/priority.entity';
 import { RequestType } from 'src/request_type/request_type.entity';
 import { generateTicketCode } from './helper/generateTicketCode.helper';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class TicketService {
@@ -20,6 +21,7 @@ export class TicketService {
     private priorityRepository: Repository<Priority>,
     @InjectRepository(RequestType)
     private requestTypeRepository: Repository<RequestType>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   getAllTicket() {
@@ -50,14 +52,19 @@ export class TicketService {
       throw new NotFoundException('Tipo de solicitud no existe');
     }
 
+    const user = await this.userRepository.findOneBy({ id: body.user_id });
+    if (!user) {
+      throw new NotFoundException('Usuario no existe');
+    }
+
     const code = await this.generateUniqueTicketCode();
 
     const newTicket = this.ticketRepository.create({
       code,
       state,
       priority,
+      user,
       request_type: requestType,
-      created_by: body.created_by,
       is_active: body.is_active ?? true,
     });
 
@@ -97,6 +104,16 @@ export class TicketService {
       }
 
       currentTicket.request_type = requestType;
+    }
+
+    if (body.user_id !== undefined) {
+      const user = await this.userRepository.findOneBy({
+        id: body.user_id,
+      });
+      if (!user) {
+        throw new NotFoundException('Usuario no existe ');
+      }
+      currentTicket.user = user;
     }
 
     const { state_id, priority_id, request_type_id, ...ticketData } = body;

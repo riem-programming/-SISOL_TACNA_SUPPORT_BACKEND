@@ -1,6 +1,7 @@
 import { Priority } from 'src/priority/priority.entity';
 import { RequestType } from 'src/request_type/request_type.entity';
 import { State } from 'src/state/state.entity';
+import { User } from 'src/user/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -42,7 +43,11 @@ export class Ticket {
 
   // ESTO DEBE SER EL ID DEL USUARIO
   @Column()
-  created_by!: number;
+  user_id!: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;
