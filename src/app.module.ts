@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VoucherRequestModule } from './voucher_request/voucher_request.module';
 import { VoucherActionTypeModule } from './voucher_action_type/voucher_action_type.module';
+import { SystemRoleModule } from './system_role/system_role.module';
+import { ContractTypeModule } from './contract_type/contract_type.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { VoucherActionTypeModule } from './voucher_action_type/voucher_action_ty
     AuthModule,
     VoucherRequestModule,
     VoucherActionTypeModule,
+    SystemRoleModule,
+    ContractTypeModule,
   ],
   controllers: [],
   providers: [],
