@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDocumentType } from './dto/create-document-type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DocumentType } from './document_type.entity';
@@ -20,7 +20,15 @@ export class DocumentTypeService {
     return this.documentTypeRepository.findOneBy({ id });
   }
 
-  createDocumentType(body: CreateDocumentType) {
+  async createDocumentType(body: CreateDocumentType) {
+    const existingDocumentTypeCode =
+      await this.documentTypeRepository.findOneBy({ code: body.code });
+    if (existingDocumentTypeCode) {
+      throw new NotFoundException(
+        'El codigo del tipo de documento, ya se encuentra registrado',
+      );
+    }
+
     const newDocumentType = this.documentTypeRepository.create(body);
     return this.documentTypeRepository.save(newDocumentType);
   }
@@ -28,6 +36,16 @@ export class DocumentTypeService {
   async updateDocumentType(body: UpdateDocumentType) {
     const currentDocumentType = await this.getDocumentTypeById(body.id);
     if (!currentDocumentType) return null;
+
+    if (body.code && currentDocumentType.code !== body.code) {
+      const existingDocumentTypeCode =
+        await this.documentTypeRepository.findOneBy({ code: body.code });
+      if (existingDocumentTypeCode) {
+        throw new NotFoundException(
+          'El nuevo codigo del tipo de documento, ya se encuentra registrado',
+        );
+      }
+    }
 
     Object.assign(currentDocumentType, body);
     return await this.documentTypeRepository.save(currentDocumentType);
