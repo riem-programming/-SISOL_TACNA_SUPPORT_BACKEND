@@ -8,6 +8,8 @@ import { TicketModule } from './ticket/ticket.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { VoucherRequestModule } from './voucher_request/voucher_request.module';
+import { VoucherActionTypeModule } from './voucher_action_type/voucher_action_type.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     TicketModule,
     UserModule,
     AuthModule,
+    VoucherRequestModule,
+    VoucherActionTypeModule,
   ],
   controllers: [],
   providers: [],

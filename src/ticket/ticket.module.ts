@@ -14,5 +14,6 @@ import { User } from 'src/user/user.entity';
   ],
   controllers: [TicketController],
   providers: [TicketService],
+  exports: [TicketService],
 })
 export class TicketModule {}
