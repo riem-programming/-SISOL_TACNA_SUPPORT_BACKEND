@@ -14,6 +14,8 @@ import { SystemRoleModule } from './system_role/system_role.module';
 import { ContractTypeModule } from './contract_type/contract_type.module';
 import { CreateUserRequestModule } from './create_user_request/create_user_request.module';
 import { UserProblemRequestModule } from './user_problem_request/user_problem_request.module';
+import { TechnicalSupportRequestModule } from './technical_support_request/technical_support_request.module';
+import { SupportModeModule } from './support_mode/support_mode.module';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { UserProblemRequestModule } from './user_problem_request/user_problem_re
     ContractTypeModule,
     CreateUserRequestModule,
     UserProblemRequestModule,
+    TechnicalSupportRequestModule,
+    SupportModeModule,
   ],
   controllers: [],
   providers: [],
