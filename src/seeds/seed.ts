@@ -7,6 +7,8 @@ import { seedState } from './state.seed';
 import { seedRequestType } from './request_type.seed';
 import { seedSystemRole } from './system_role.seed';
 import { seedDocumentType } from './document_type.seed';
+import { seedContractType } from './contract_type.seed';
+import { seedVoucherActionType } from './voucher_action_type.seed';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -19,6 +21,8 @@ async function bootstrap() {
     await seedRequestType(dataSource);
     await seedSystemRole(dataSource);
     await seedDocumentType(dataSource);
+    await seedContractType(dataSource);
+    await seedVoucherActionType(dataSource);
 
     console.log('Todos los seeds ejecutados correctamente');
   } catch (error) {
