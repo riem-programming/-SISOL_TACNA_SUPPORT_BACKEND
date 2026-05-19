@@ -13,6 +13,7 @@ import { VoucherActionTypeModule } from './voucher_action_type/voucher_action_ty
 import { SystemRoleModule } from './system_role/system_role.module';
 import { ContractTypeModule } from './contract_type/contract_type.module';
 import { CreateUserRequestModule } from './create_user_request/create_user_request.module';
+import { UserProblemRequestModule } from './user_problem_request/user_problem_request.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { CreateUserRequestModule } from './create_user_request/create_user_reque
     SystemRoleModule,
     ContractTypeModule,
     CreateUserRequestModule,
+    UserProblemRequestModule,
   ],
   controllers: [],
   providers: [],
