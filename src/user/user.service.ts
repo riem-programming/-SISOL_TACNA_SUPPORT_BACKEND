@@ -12,15 +12,19 @@ import { UpdateUserPassword } from './dto/updateUserPassword.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginUser } from './dto/loginUser.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  private defaultPassword = 'SISOL';
+  private defaultPassword: string;
 
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+    protected configService: ConfigService,
+  ) {
+    this.defaultPassword = configService.getOrThrow('USER_DEFAULT_PASSWORD');
+  }
 
   getAllUser() {
     return this.userRepository.find();
