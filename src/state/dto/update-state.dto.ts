@@ -17,6 +17,11 @@ export class UpdateState {
   name!: string;
 
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
+  @IsOptional()
   @IsBoolean()
   is_active!: boolean;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { State } from './state.entity';
 import { Repository } from 'typeorm';
@@ -19,7 +19,14 @@ export class StateService {
     return this.stateRepository.findOneBy({ id });
   }
 
-  createState(body: CreateState) {
+  async createState(body: CreateState) {
+    const existingCode = await this.stateRepository.findOneBy({
+      code: body.code,
+    });
+    if (existingCode) {
+      throw new NotFoundException('Ya existe el codigo del estado');
+    }
+
     const newState = this.stateRepository.create(body);
     return this.stateRepository.save(newState);
   }
@@ -28,7 +35,16 @@ export class StateService {
     const currentState = await this.getStateById(body.id);
     if (!currentState) return null;
 
-    Object.assign(currentState, body);
+    if (body.code && body.code !== currentState.code) {
+      const existingCode = await this.stateRepository.findOneBy({
+        code: body.code,
+      });
+      if (existingCode) {
+        throw new NotFoundException('Ya existe el codigo del estado');
+      }
+    }
+
+    if (body.code && body.code) Object.assign(currentState, body);
     return await this.stateRepository.save(currentState);
   }
 
