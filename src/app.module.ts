@@ -21,6 +21,7 @@ import { SupportModeModule } from './support_mode/support_mode.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -32,7 +33,7 @@ import { SupportModeModule } from './support_mode/support_mode.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        synchronize: false,
       }),
     }),
     DocumentTypeModule,
