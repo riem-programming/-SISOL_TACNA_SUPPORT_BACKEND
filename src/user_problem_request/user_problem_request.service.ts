@@ -2,10 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TicketService } from 'src/ticket/ticket.service';
-
-import { DocumentType } from 'src/document_type/document_type.entity';
-import { ContractType } from 'src/contract_type/contract_type.entity';
-import { SystemRole } from 'src/system_role/system_role.entity';
 import { UserProblemRequest } from './user_problem_request.entity';
 import { CreateUserProblemRequest } from './dto/create-user-problem-request.dto';
 import { UpdateUserProblemRequest } from './dto/update-user-problem-request.dto';
