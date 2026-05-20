@@ -14,6 +14,11 @@ export class UpdateSupportMode {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  code!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   name!: string;
 
   @IsOptional()

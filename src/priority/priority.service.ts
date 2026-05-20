@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Priority } from './priority.entity';
@@ -20,7 +20,14 @@ export class PriorityService {
     return this.priorityRepository.findOneBy({ id });
   }
 
-  createPriority(body: CreatePriority) {
+  async createPriority(body: CreatePriority) {
+    const existingCode = await this.priorityRepository.findOneBy({
+      code: body.code,
+    });
+    if (existingCode) {
+      throw new NotFoundException('Ya existe el código');
+    }
+
     const newPriority = this.priorityRepository.create(body);
     return this.priorityRepository.save(newPriority);
   }
@@ -28,6 +35,15 @@ export class PriorityService {
   async updatePriority(body: UpdatePriority) {
     const currentPriority = await this.getPriorityById(body.id);
     if (!currentPriority) return null;
+
+    if (body.code && body.code !== currentPriority.code) {
+      const existingCode = await this.priorityRepository.findOneBy({
+        code: body.code,
+      });
+      if (existingCode) {
+        throw new NotFoundException('Ya existe el código');
+      }
+    }
 
     Object.assign(currentPriority, body);
     return await this.priorityRepository.save(currentPriority);

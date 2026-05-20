@@ -22,6 +22,11 @@ export class UpdatePriority {
   value!: number;
 
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
+  @IsOptional()
   @IsBoolean()
   is_active!: boolean;
 }

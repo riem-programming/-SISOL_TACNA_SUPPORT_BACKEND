@@ -15,6 +15,10 @@ export class CreatePriority {
   @IsNotEmpty()
   value!: number;
 
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;

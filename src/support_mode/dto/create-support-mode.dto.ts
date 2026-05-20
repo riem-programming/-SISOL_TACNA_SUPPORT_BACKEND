@@ -5,6 +5,10 @@ export class CreateSupportMode {
   @IsNotEmpty()
   name!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;

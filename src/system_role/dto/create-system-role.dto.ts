@@ -9,6 +9,10 @@ export class CreateSystemRole {
   @IsNotEmpty()
   short_name!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;

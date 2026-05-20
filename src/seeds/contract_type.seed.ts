@@ -15,11 +15,13 @@ export async function seedContractType(dataSource: DataSource) {
     {
       long_name: 'PERSONAL SISOL',
       short_name: 'SISOL',
+      code: 'local',
       is_active: true,
     },
     {
       long_name: 'PERSONAL ASOCIADO / EXTERNO',
       short_name: 'ASOCIADO',
+      code: 'external',
       is_active: true,
     },
   ]);

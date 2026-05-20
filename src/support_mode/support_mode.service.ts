@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SupportMode } from './support_mode.entity';
@@ -20,7 +20,14 @@ export class SupportModeService {
     return this.supportModeRepository.findOneBy({ id });
   }
 
-  createsupportMode(body: CreateSupportMode) {
+  async createsupportMode(body: CreateSupportMode) {
+    const existingCode = await this.supportModeRepository.findOneBy({
+      code: body.code,
+    });
+    if (existingCode) {
+      throw new NotFoundException('Ya existe el código');
+    }
+
     const newsupportMode = this.supportModeRepository.create(body);
     return this.supportModeRepository.save(newsupportMode);
   }
@@ -28,6 +35,15 @@ export class SupportModeService {
   async updatesupportMode(body: UpdateSupportMode) {
     const currentsupportMode = await this.getsupportModeById(body.id);
     if (!currentsupportMode) return null;
+
+    if (body.code && body.code !== currentsupportMode.code) {
+      const existingCode = await this.supportModeRepository.findOneBy({
+        code: body.code,
+      });
+      if (existingCode) {
+        throw new NotFoundException('Ya existe el código');
+      }
+    }
 
     Object.assign(currentsupportMode, body);
     return await this.supportModeRepository.save(currentsupportMode);

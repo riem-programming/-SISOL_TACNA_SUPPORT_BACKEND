@@ -17,6 +17,9 @@ export class Priority {
   @Column()
   value!: number;
 
+  @Column({ unique: true })
+  code!: string;
+
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;
 

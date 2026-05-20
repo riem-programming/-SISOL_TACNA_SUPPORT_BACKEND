@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContractType } from './contract_type.entity';
@@ -20,7 +20,14 @@ export class ContractTypeService {
     return this.contractTypeRepository.findOneBy({ id });
   }
 
-  createcontractType(body: CreateContractType) {
+  async createcontractType(body: CreateContractType) {
+    const existingCode = await this.contractTypeRepository.findOneBy({
+      code: body.code,
+    });
+    if (existingCode) {
+      throw new NotFoundException('Ya existe el código');
+    }
+
     const newcontractType = this.contractTypeRepository.create(body);
     return this.contractTypeRepository.save(newcontractType);
   }
@@ -28,6 +35,15 @@ export class ContractTypeService {
   async updatecontractType(body: UpdateContractType) {
     const currentcontractType = await this.getcontractTypeById(body.id);
     if (!currentcontractType) return null;
+
+    if (body.code && body.code !== currentcontractType.code) {
+      const existingCode = await this.contractTypeRepository.findOneBy({
+        code: body.code,
+      });
+      if (existingCode) {
+        throw new NotFoundException('Ya existe el código');
+      }
+    }
 
     Object.assign(currentcontractType, body);
     return await this.contractTypeRepository.save(currentcontractType);

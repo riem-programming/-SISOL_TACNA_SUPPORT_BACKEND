@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SystemRole } from './system_role.entity';
@@ -20,7 +20,14 @@ export class SystemRoleService {
     return this.systemRoleRepository.findOneBy({ id });
   }
 
-  createsystemRole(body: CreateSystemRole) {
+  async createsystemRole(body: CreateSystemRole) {
+    const existingCode = await this.systemRoleRepository.findOneBy({
+      code: body.code,
+    });
+    if (existingCode) {
+      throw new NotFoundException('Ya existe el código');
+    }
+
     const newsystemRole = this.systemRoleRepository.create(body);
     return this.systemRoleRepository.save(newsystemRole);
   }
@@ -28,6 +35,15 @@ export class SystemRoleService {
   async updatesystemRole(body: UpdateSystemRole) {
     const currentsystemRole = await this.getsystemRoleById(body.id);
     if (!currentsystemRole) return null;
+
+    if (body.code && body.code !== currentsystemRole.code) {
+      const existingCode = await this.systemRoleRepository.findOneBy({
+        code: body.code,
+      });
+      if (existingCode) {
+        throw new NotFoundException('Ya existe el código');
+      }
+    }
 
     Object.assign(currentsystemRole, body);
     return await this.systemRoleRepository.save(currentsystemRole);

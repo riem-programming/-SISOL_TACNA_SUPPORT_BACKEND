@@ -14,6 +14,11 @@ export class UpdateContractType {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
+  code!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   long_name!: string;
 
   @IsOptional()

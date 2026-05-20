@@ -17,6 +17,9 @@ export class SystemRole {
   @Column()
   short_name!: string;
 
+  @Column({ unique: true })
+  code!: string;
+
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;
 
