@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { TicketService } from 'src/ticket/ticket.service';
 import { CreateUserRequest } from './create-user-request.entity';
 import { CreateCreateUserRequest } from './dto/create-create-user-request.dto';
@@ -27,8 +27,21 @@ export class CreateUserRequestService {
     this.ticketService = TicketService;
   }
 
-  getAllcreateUserRequest() {
-    return this.createUserRequestRepository.find();
+  async getAllcreateUserRequest() {
+    const data = await this.createUserRequestRepository.find({
+      relations: {
+        system_roles: true,
+      },
+    });
+
+    return data.map((item) => {
+      const { system_roles, ...rest } = item;
+
+      return {
+        ...rest,
+        system_role_ids: system_roles.map((role) => role.id),
+      };
+    });
   }
 
   getcreateUserRequestById(id: number) {
@@ -50,11 +63,11 @@ export class CreateUserRequestService {
       throw new NotFoundException('No existe el tipo de contrato');
     }
 
-    const systemRole = await this.systemRoleRepository.findOneBy({
-      id: body.system_role_id,
+    const systemRoles = await this.systemRoleRepository.findBy({
+      id: In(body.system_role_ids),
     });
-    if (!systemRole) {
-      throw new NotFoundException('No existe el tipo de rol');
+    if (systemRoles.length !== body.system_role_ids.length) {
+      throw new NotFoundException('Uno o más roles no existen');
     }
 
     const newTicket = await this.ticketService.createTicket(body);
@@ -67,8 +80,7 @@ export class CreateUserRequestService {
       document_type_id: documentType.id,
       contract_type: contractType,
       contract_type_id: contractType.id,
-      system_role: systemRole,
-      system_role_id: systemRole.id,
+      system_roles: systemRoles,
       ticket: newTicket,
       ticket_id: newTicket.id,
       first_names: body.first_names,
@@ -84,6 +96,7 @@ export class CreateUserRequestService {
     const currentcreateUserRequest = await this.getcreateUserRequestById(
       body.id,
     );
+
     if (!currentcreateUserRequest) return null;
 
     if (
@@ -93,6 +106,7 @@ export class CreateUserRequestService {
       const documentType = await this.documentTypeRepository.findOneBy({
         id: body.document_type_id,
       });
+
       if (!documentType) {
         throw new NotFoundException('No existe el tipo documento');
       }
@@ -107,6 +121,7 @@ export class CreateUserRequestService {
       const contractType = await this.contractTypeRepository.findOneBy({
         id: body.contract_type_id,
       });
+
       if (!contractType) {
         throw new NotFoundException('No existe el tipo de contrato');
       }
@@ -114,27 +129,27 @@ export class CreateUserRequestService {
       currentcreateUserRequest.contract_type = contractType;
     }
 
-    if (
-      body.system_role_id &&
-      body.system_role_id !== currentcreateUserRequest.system_role_id
-    ) {
-      const systemRole = await this.systemRoleRepository.findOneBy({
-        id: body.system_role_id,
+    if (body.system_role_ids !== undefined) {
+      const systemRoles = await this.systemRoleRepository.findBy({
+        id: In(body.system_role_ids),
       });
-      if (!systemRole) {
-        throw new NotFoundException('No existe el tipo de rol');
+
+      if (systemRoles.length !== body.system_role_ids.length) {
+        throw new NotFoundException('Uno o más roles no existen');
       }
-      currentcreateUserRequest.system_role = systemRole;
+
+      currentcreateUserRequest.system_roles = systemRoles;
     }
 
     const {
-      system_role_id,
       contract_type_id,
       document_type_id,
+      system_role_ids,
       ...ticketData
     } = body;
 
     Object.assign(currentcreateUserRequest, ticketData);
+
     return await this.createUserRequestRepository.save(
       currentcreateUserRequest,
     );

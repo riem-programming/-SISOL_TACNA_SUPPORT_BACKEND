@@ -7,6 +7,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -50,12 +52,22 @@ export class CreateUserRequest {
   @JoinColumn({ name: 'contract_type_id' })
   contract_type!: ContractType;
 
-  @Column()
-  system_role_id!: number;
+  // @Column()
+  // system_role_id!: number;
 
-  @ManyToOne(() => SystemRole)
-  @JoinColumn({ name: 'system_role_id' })
-  system_role!: SystemRole;
+  @ManyToMany(() => SystemRole)
+  @JoinTable({
+    name: 'create_user_request_system_role',
+    joinColumn: {
+      name: 'create_user_request_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'system_role_id',
+      referencedColumnName: 'id',
+    },
+  })
+  system_roles!: SystemRole[];
 
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;

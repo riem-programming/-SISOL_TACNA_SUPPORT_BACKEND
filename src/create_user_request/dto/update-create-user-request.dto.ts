@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateCreateUserRequest {
   @IsNumber()
@@ -36,7 +43,8 @@ export class UpdateCreateUserRequest {
   contract_type_id!: number;
 
   @IsOptional()
-  @IsNumber()
-  @IsNotEmpty()
-  system_role_id!: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
+  system_role_ids!: number[];
 }

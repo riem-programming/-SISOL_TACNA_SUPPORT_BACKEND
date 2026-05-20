@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { CreateTicket } from 'src/ticket/dto/createTicket.dto';
 
 export class CreateCreateUserRequest extends CreateTicket {
@@ -26,7 +33,8 @@ export class CreateCreateUserRequest extends CreateTicket {
   @IsNotEmpty()
   contract_type_id!: number;
 
-  @IsNumber()
-  @IsNotEmpty()
-  system_role_id!: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
+  system_role_ids!: number[];
 }
