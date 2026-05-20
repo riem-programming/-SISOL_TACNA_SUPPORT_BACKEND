@@ -39,6 +39,7 @@ export class UserController {
     return currentUser;
   }
 
+  @Public()
   @Post('/')
   async createUser(@Body() body: CreateUser) {
     return await this.userService.createUser(body);
