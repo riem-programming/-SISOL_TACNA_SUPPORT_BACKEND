@@ -90,6 +90,7 @@ export class UserService {
 
     const hashedNewPassword = await bcrypt.hash(body.new_password, 10);
     currentUser.password = hashedNewPassword;
+    currentUser.must_change_password = false;
     return await this.userRepository.save(currentUser);
   }
 
@@ -121,6 +122,7 @@ export class UserService {
     const currentUser = await this.getUserById(id);
     if (!currentUser) return null;
     currentUser.password = await bcrypt.hash(this.defaultPassword, 10);
+    currentUser.must_change_password = true;
     return await this.userRepository.save(currentUser);
   }
 }
