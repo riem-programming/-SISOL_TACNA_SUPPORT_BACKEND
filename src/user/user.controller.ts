@@ -30,6 +30,13 @@ export class UserController {
     return await this.userService.getAllUser();
   }
 
+  @Get('/verify-session')
+  verifySession() {
+    return {
+      success: true,
+    };
+  }
+
   @Get('/:id')
   async getUserById(@Param('id') id: string) {
     const currentUser = await this.userService.getUserById(Number(id));
@@ -91,10 +98,5 @@ export class UserController {
       throw new NotFoundException('No existe el usuario');
     }
     return deleteUser;
-  }
-
-  @Get('/profile')
-  getProfile(@Request() req: any) {
-    return req.user;
   }
 }
