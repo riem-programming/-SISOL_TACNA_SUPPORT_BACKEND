@@ -29,4 +29,8 @@ export class UpdateRequestType {
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;
+
+  @IsOptional()
+  @IsString()
+  emoji!: string;
 }

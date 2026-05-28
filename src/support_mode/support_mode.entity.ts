@@ -12,10 +12,16 @@ export class SupportMode {
   id!: number;
 
   @Column()
-  name!: string;
+  short_name!: string;
+
+  @Column()
+  long_name!: string;
 
   @Column({ unique: true })
   code!: string;
+
+  @Column()
+  emoji!: string;
 
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;

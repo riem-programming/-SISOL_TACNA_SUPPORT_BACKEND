@@ -13,12 +13,16 @@ export async function seedSupportMode(dataSource: DataSource) {
 
   await repository.save([
     {
-      name: 'Presencial',
+      short_name: 'Presencial',
+      long_name: 'Soporte remoto por chat, email o videollamada',
+      emoji: '💻',
       code: 'in-person',
       is_active: true,
     },
     {
-      name: 'Virtual',
+      short_name: 'Virtual',
+      long_name: 'El equipo de soporte acude en persona',
+      emoji: '🚶',
       code: 'virtual',
       is_active: true,
     },

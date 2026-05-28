@@ -9,7 +9,15 @@ import {
 export class CreatePriority {
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  short_name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  long_name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  emoji!: string;
 
   @IsNumber()
   @IsNotEmpty()

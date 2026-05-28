@@ -12,7 +12,13 @@ export class Priority {
   id!: number;
 
   @Column()
-  name!: string;
+  short_name!: string;
+
+  @Column()
+  long_name!: string;
+
+  @Column()
+  emoji!: string;
 
   @Column()
   value!: number;

@@ -20,6 +20,9 @@ export class RequestType {
   @Column({ unique: true })
   code!: string;
 
+  @Column()
+  emoji!: string;
+
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;
 

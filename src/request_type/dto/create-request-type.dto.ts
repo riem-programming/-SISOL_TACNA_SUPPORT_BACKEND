@@ -16,4 +16,8 @@ export class CreateRequestType {
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;
+
+  @IsOptional()
+  @IsString()
+  emoji!: string;
 }

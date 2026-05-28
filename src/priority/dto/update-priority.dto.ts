@@ -14,7 +14,17 @@ export class UpdatePriority {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  short_name!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  long_name!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  emoji!: string;
 
   @IsOptional()
   @IsNumber()

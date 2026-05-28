@@ -19,7 +19,17 @@ export class UpdateSupportMode {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  short_name!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  long_name!: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  emoji!: string;
 
   @IsOptional()
   @IsBoolean()
