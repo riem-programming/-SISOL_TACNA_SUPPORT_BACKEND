@@ -6,10 +6,12 @@ import { CreateVoucherRequest } from './dto/create-voucher-request.dto';
 import { TicketService } from 'src/ticket/ticket.service';
 import { VoucherActionType } from 'src/voucher_action_type/voucher_action_type.entity';
 import { UpdateVoucherRequest } from './dto/update-voucher-request.dto';
+import { StorageService } from 'src/storage/storage.service';
 
 @Injectable()
 export class VoucherRequestService {
   private readonly ticketService: TicketService;
+  private readonly storageServcie: StorageService;
 
   constructor(
     @InjectRepository(VoucherRequest)
@@ -17,8 +19,10 @@ export class VoucherRequestService {
     @InjectRepository(VoucherActionType)
     private voucherActionTypeRepository: Repository<VoucherActionType>,
     TicketService: TicketService,
+    StorageService: StorageService,
   ) {
     this.ticketService = TicketService;
+    this.storageServcie = StorageService;
   }
 
   getAllvoucherRequest() {
@@ -29,7 +33,10 @@ export class VoucherRequestService {
     return this.voucherRequestRepository.findOneBy({ id });
   }
 
-  async createvoucherRequest(body: CreateVoucherRequest) {
+  async createvoucherRequest(
+    body: CreateVoucherRequest,
+    file: Express.Multer.File,
+  ) {
     const voucherActionType = await this.voucherActionTypeRepository.findOneBy({
       id: body.voucher_action_type_id,
     });
@@ -42,6 +49,11 @@ export class VoucherRequestService {
       throw new NotFoundException('Ocurrio un problema al crear el ticket');
     }
 
+    let attachmentKey: string | null = null;
+    if (file) {
+      attachmentKey = await this.storageServcie.uploadFile(file);
+    }
+
     const newVoucherRequest = this.voucherRequestRepository.create({
       voucher_action_type: voucherActionType,
       voucher_action_type_id: voucherActionType.id,
@@ -50,6 +62,7 @@ export class VoucherRequestService {
       voucher_code: body.voucher_code,
       speciality: body.speciality,
       motive: body.motive,
+      attachment_key: attachmentKey ?? undefined,
     });
 
     return await this.voucherRequestRepository.save(newVoucherRequest);
@@ -71,5 +84,15 @@ export class VoucherRequestService {
       id: currentvoucherRequest.id,
     });
     return currentvoucherRequest;
+  }
+
+  async getAttachmentUrl(id: number) {
+    const voucher = await this.voucherRequestRepository.findOneBy({ id });
+    if (!voucher?.attachment_key) {
+      throw new NotFoundException('No tiene archivo adjunto');
+    }
+
+    const url = await this.storageServcie.getSignedUrl(voucher.attachment_key);
+    return { url };
   }
 }

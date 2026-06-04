@@ -16,6 +16,7 @@ import { CreateUserRequestModule } from './create_user_request/create_user_reque
 import { UserProblemRequestModule } from './user_problem_request/user_problem_request.module';
 import { TechnicalSupportRequestModule } from './technical_support_request/technical_support_request.module';
 import { SupportModeModule } from './support_mode/support_mode.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { SupportModeModule } from './support_mode/support_mode.module';
     UserProblemRequestModule,
     TechnicalSupportRequestModule,
     SupportModeModule,
+    StorageModule,
   ],
   controllers: [],
   providers: [],

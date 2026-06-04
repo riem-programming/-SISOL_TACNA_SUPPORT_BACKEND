@@ -13,28 +13,20 @@ export async function seedRequestType(dataSource: DataSource) {
 
   await repository.save([
     {
-      short_name: 'Nuevo usuario',
-      long_name: 'Solicitud de creación de usuario en el sistema',
-      code: 'USR_CREATE',
-      emoji: '👤',
-      is_active: true,
-    },
-    {
-      short_name: 'Liberar ticket <30d',
-      long_name:
-        'Solicitud de liberación de tickets con antigüedad menor a 30 días',
+      short_name: 'Liberar ticket',
+      long_name: 'Solicitud de liberación de tickets',
       code: 'TICKET_RELEASE_LT30',
       emoji: '🔓',
       is_active: true,
     },
-    {
-      short_name: 'Desbloquear >30d',
-      long_name:
-        'Solicitud de desbloqueo de tickets con antigüedad mayor a 30 días',
-      code: 'TICKET_UNLOCK_GT30',
-      emoji: '🗝️',
-      is_active: true,
-    },
+    // {
+    //   short_name: 'Desbloquear >30d',
+    //   long_name:
+    //     'Solicitud de desbloqueo de tickets con antigüedad mayor a 30 días',
+    //   code: 'TICKET_UNLOCK_GT30',
+    //   emoji: '🗝️',
+    //   is_active: true,
+    // },
     // {
     //   short_name: 'Nota crédito',
     //   long_name: 'Solicitud para realizar nota de crédito',
@@ -49,11 +41,18 @@ export async function seedRequestType(dataSource: DataSource) {
     //   emoji: '↩️',
     //   is_active: true,
     // },
+    // {
+    //   short_name: 'Problema usuario',
+    //   long_name: 'Problemas relacionados con usuario o acceso',
+    //   code: 'USER_ISSUE',
+    //   emoji: '👥',
+    //   is_active: true,
+    // },
     {
-      short_name: 'Problema usuario',
-      long_name: 'Problemas relacionados con usuario o acceso',
-      code: 'USER_ISSUE',
-      emoji: '👥',
+      short_name: 'Problema sistema',
+      long_name: 'Incidencias o fallas del sistema',
+      code: 'SYSTEM_ISSUE',
+      emoji: '💻',
       is_active: true,
     },
     {
@@ -64,10 +63,10 @@ export async function seedRequestType(dataSource: DataSource) {
       is_active: true,
     },
     {
-      short_name: 'Problema sistema',
-      long_name: 'Incidencias o fallas del sistema',
-      code: 'SYSTEM_ISSUE',
-      emoji: '💻',
+      short_name: 'Nuevo usuario',
+      long_name: 'Solicitud de creación de usuario en el sistema',
+      code: 'USR_CREATE',
+      emoji: '👤',
       is_active: true,
     },
     {

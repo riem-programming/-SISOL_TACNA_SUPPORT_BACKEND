@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -7,18 +8,22 @@ import {
 } from 'class-validator';
 
 export class CreateTicket {
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   state_id!: number;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   request_type_id!: number;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   priority_id!: number;
 
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   user_id!: number;

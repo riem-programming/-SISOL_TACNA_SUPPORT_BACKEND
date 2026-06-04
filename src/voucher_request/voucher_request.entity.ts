@@ -38,6 +38,9 @@ export class VoucherRequest {
   @Column({ nullable: true })
   motive!: string;
 
+  @Column({ nullable: true })
+  attachment_key!: string;
+
   @CreateDateColumn()
   createdAt!: Date;
 

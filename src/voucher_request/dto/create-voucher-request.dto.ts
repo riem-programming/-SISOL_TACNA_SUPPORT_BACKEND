@@ -1,7 +1,9 @@
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { CreateTicket } from 'src/ticket/dto/createTicket.dto';
 
 export class CreateVoucherRequest extends CreateTicket {
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   voucher_action_type_id!: number;
