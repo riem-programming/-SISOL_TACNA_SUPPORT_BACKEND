@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,6 +9,8 @@ import {
   Patch,
   Post,
   Put,
+  Query,
+  Request,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicket } from './dto/createTicket.dto';
@@ -25,8 +28,9 @@ export class TicketController {
   private notFoundMessage = 'No existe el ticket';
 
   @Get('/')
-  async getAllTicket() {
-    return await this.ticketService.getAllTicket();
+  async getAllTicket(@Request() req) {
+    const userId = req.user.sub;
+    return await this.ticketService.getAllTicket(userId);
   }
 
   @Get('/:id')

@@ -24,8 +24,20 @@ export class TicketService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  getAllTicket() {
-    return this.ticketRepository.find();
+  async getAllTicket(userId: number) {
+    const existingUser = await this.userRepository.findOneBy({ id: userId });
+    if (!existingUser) {
+      throw new NotFoundException('No existe el usuario');
+    }
+    return this.ticketRepository.find({
+      where: { user_id: userId, is_active: true },
+      relations: [
+        'createUserRequest',
+        'voucherRequest',
+        'technicalSupportRequest',
+      ],
+      order: { createdAt: 'DESC' },
+    });
   }
 
   getTicketById(id: number) {

@@ -1,13 +1,17 @@
+import { CreateUserRequest } from 'src/create_user_request/create-user-request.entity';
 import { Priority } from 'src/priority/priority.entity';
 import { RequestType } from 'src/request_type/request_type.entity';
 import { State } from 'src/state/state.entity';
+import { TechnicalSupportRequest } from 'src/technical_support_request/technical_support_request.entity';
 import { User } from 'src/user/user.entity';
+import { VoucherRequest } from 'src/voucher_request/voucher_request.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -57,4 +61,13 @@ export class Ticket {
 
   @UpdateDateColumn()
   updateddAt!: Date;
+
+  @OneToOne(() => CreateUserRequest, (cur) => cur.ticket)
+  createUserRequest!: CreateUserRequest;
+
+  @OneToOne(() => VoucherRequest, (vr) => vr.ticket)
+  voucherRequest!: VoucherRequest;
+
+  @OneToOne(() => TechnicalSupportRequest, (cur) => cur.ticket)
+  technicalSupportRequest!: TechnicalSupportRequest;
 }
