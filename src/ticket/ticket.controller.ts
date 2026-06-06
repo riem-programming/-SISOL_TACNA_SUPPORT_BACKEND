@@ -18,6 +18,8 @@ import { CreateTicket } from './dto/createTicket.dto';
 import { UpdateTicket } from './dto/updateTicket.dto';
 import { UpdateTicketState } from './dto/updateTicketState.dto';
 import { Observable } from 'rxjs';
+import { MessageEvent } from '@nestjs/common';
+import { Public } from 'src/auth/public.decorator';
 
 @Controller('ticket')
 export class TicketController {
@@ -28,6 +30,14 @@ export class TicketController {
   }
 
   private notFoundMessage = 'No existe el ticket';
+
+  @Sse('events')
+  ticketEvents(
+    @Query('userId') userId: string,
+    @Query('token') _token: string,
+  ): Observable<MessageEvent> {
+    return this.ticketService.getEventStream(userId);
+  }
 
   @Get('/')
   async getAllTicket(@Request() req) {
@@ -81,9 +91,4 @@ export class TicketController {
     }
     return deleteTicket;
   }
-
-  // @Sse('events')
-  // ticketEvents(@Query('userId') userId: string) : Observable<MessageEvent> {
-
-  // }
 }

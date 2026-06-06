@@ -11,10 +11,13 @@ import { generateTicketCode } from './helper/generateTicketCode.helper';
 import { User } from 'src/user/user.entity';
 import { TicketStateHistoryService } from 'src/ticket_state_history/ticket_state_history.service';
 import { TelegramService } from 'src/telegram/telegram.service';
+import { Observable, Subject } from 'rxjs';
+import { MessageEvent } from '@nestjs/common';
 
 @Injectable()
 export class TicketService {
   private readonly ticketStateHistory: TicketStateHistoryService;
+  private subjects = new Map<string, Set<Subject<MessageEvent>>>();
 
   constructor(
     @InjectRepository(Ticket)
@@ -177,6 +180,13 @@ export class TicketService {
         ticket_id: currentTicket.id,
         state_id: state.id,
       });
+
+      // ✅ Usar el método emitirCambioEstado con el user_id del ticket
+      this.emitirCambioEstado(
+        String(currentTicket.user_id), // key del mapa = userId
+        currentTicket.id, // para que Angular sepa qué ticket cambió
+        stateId,
+      );
     }
 
     currentTicket.state = state;
@@ -202,5 +212,46 @@ export class TicketService {
     } while (exists);
 
     return code;
+  }
+
+  getEventStream(userId: string): Observable<MessageEvent> {
+    const subject = new Subject<MessageEvent>();
+
+    // Agrega al Set existente o crea uno nuevo
+    if (!this.subjects.has(userId)) {
+      this.subjects.set(userId, new Set());
+    }
+    this.subjects.get(userId)!.add(subject);
+
+    console.log(
+      `Usuario ${userId} conectado — conexiones activas: ${this.subjects.get(userId)!.size}`,
+    );
+
+    return new Observable<MessageEvent>((observer) => {
+      const sub = subject.subscribe(observer);
+      return () => {
+        sub.unsubscribe();
+        // Elimina solo este subject, no todos los del usuario
+        const set = this.subjects.get(userId);
+        if (set) {
+          set.delete(subject);
+          if (set.size === 0) this.subjects.delete(userId);
+        }
+      };
+    });
+  }
+
+  protected emitirCambioEstado(
+    userId: string,
+    ticketId: number,
+    stateId: number,
+  ): void {
+    const set = this.subjects.get(userId);
+    if (!set) return;
+
+    // Emite a TODOS los dispositivos del usuario
+    for (const subject of set) {
+      subject.next({ data: { ticket_id: ticketId, state_id: stateId } });
+    }
   }
 }
