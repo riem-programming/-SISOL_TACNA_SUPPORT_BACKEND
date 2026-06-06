@@ -7,10 +7,14 @@ import { State } from 'src/state/state.entity';
 import { Priority } from 'src/priority/priority.entity';
 import { RequestType } from 'src/request_type/request_type.entity';
 import { User } from 'src/user/user.entity';
+import { TicketStateHistoryModule } from 'src/ticket_state_history/ticket_state_history.module';
+import { TelegramModule } from 'src/telegram/telegram.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Ticket, State, Priority, RequestType, User]),
+    TicketStateHistoryModule,
+    TelegramModule,
   ],
   controllers: [TicketController],
   providers: [TicketService],

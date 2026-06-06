@@ -17,6 +17,15 @@ export class State {
   @Column({ unique: true })
   code!: string;
 
+  @Column()
+  is_terminal!: boolean;
+
+  @Column({
+    type: 'integer',
+    nullable: true,
+  })
+  flow_order!: number | null;
+
   @Column({ type: 'boolean', default: true })
   is_active!: boolean;
 

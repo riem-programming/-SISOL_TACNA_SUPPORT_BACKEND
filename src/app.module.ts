@@ -17,6 +17,8 @@ import { UserProblemRequestModule } from './user_problem_request/user_problem_re
 import { TechnicalSupportRequestModule } from './technical_support_request/technical_support_request.module';
 import { SupportModeModule } from './support_mode/support_mode.module';
 import { StorageModule } from './storage/storage.module';
+import { TicketStateHistoryModule } from './ticket_state_history/ticket_state_history.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -53,6 +55,8 @@ import { StorageModule } from './storage/storage.module';
     TechnicalSupportRequestModule,
     SupportModeModule,
     StorageModule,
+    TicketStateHistoryModule,
+    TelegramModule,
   ],
   controllers: [],
   providers: [],

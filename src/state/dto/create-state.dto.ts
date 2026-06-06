@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateState {
   @IsString()
@@ -12,4 +18,11 @@ export class CreateState {
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;
+
+  @IsBoolean()
+  is_terminal!: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  flow_order!: number | null;
 }

@@ -11,11 +11,13 @@ import {
   Put,
   Query,
   Request,
+  Sse,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicket } from './dto/createTicket.dto';
 import { UpdateTicket } from './dto/updateTicket.dto';
 import { UpdateTicketState } from './dto/updateTicketState.dto';
+import { Observable } from 'rxjs';
 
 @Controller('ticket')
 export class TicketController {
@@ -79,4 +81,9 @@ export class TicketController {
     }
     return deleteTicket;
   }
+
+  // @Sse('events')
+  // ticketEvents(@Query('userId') userId: string) : Observable<MessageEvent> {
+
+  // }
 }

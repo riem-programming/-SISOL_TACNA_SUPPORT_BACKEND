@@ -24,4 +24,12 @@ export class UpdateState {
   @IsOptional()
   @IsBoolean()
   is_active!: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  is_terminal!: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  flow_order!: number | null;
 }

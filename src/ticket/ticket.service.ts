@@ -9,9 +9,13 @@ import { Priority } from 'src/priority/priority.entity';
 import { RequestType } from 'src/request_type/request_type.entity';
 import { generateTicketCode } from './helper/generateTicketCode.helper';
 import { User } from 'src/user/user.entity';
+import { TicketStateHistoryService } from 'src/ticket_state_history/ticket_state_history.service';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class TicketService {
+  private readonly ticketStateHistory: TicketStateHistoryService;
+
   constructor(
     @InjectRepository(Ticket)
     private ticketRepository: Repository<Ticket>,
@@ -22,7 +26,11 @@ export class TicketService {
     @InjectRepository(RequestType)
     private requestTypeRepository: Repository<RequestType>,
     @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+    TicketStateHistory: TicketStateHistoryService,
+    private readonly telegram: TelegramService,
+  ) {
+    this.ticketStateHistory = TicketStateHistory;
+  }
 
   async getAllTicket(userId: number) {
     const existingUser = await this.userRepository.findOneBy({ id: userId });
@@ -80,7 +88,19 @@ export class TicketService {
       is_active: body.is_active ?? true,
     });
 
-    return await this.ticketRepository.save(newTicket);
+    const savedTicket = await this.ticketRepository.save(newTicket);
+    this.telegram.notificarTicketNuevo(
+      savedTicket.id,
+      requestType.long_name,
+      user.username,
+    );
+
+    await this.ticketStateHistory.createTicketStateHistory({
+      ticket_id: savedTicket.id,
+      state_id: state.id,
+    });
+
+    return savedTicket;
   }
 
   async updateTicket(body: UpdateTicket) {
@@ -91,6 +111,13 @@ export class TicketService {
       const state = await this.stateRepository.findOneBy({ id: body.state_id });
       if (!state) {
         throw new NotFoundException('Estado no encontrado');
+      }
+
+      if (state.id !== currentTicket.state_id) {
+        this.ticketStateHistory.createTicketStateHistory({
+          state_id: state.id,
+          ticket_id: currentTicket.id,
+        });
       }
 
       currentTicket.state = state;
@@ -143,6 +170,13 @@ export class TicketService {
 
     if (!state) {
       throw new NotFoundException('Estado no encontrado');
+    }
+
+    if (currentTicket.state_id !== state.id) {
+      this.ticketStateHistory.createTicketStateHistory({
+        ticket_id: currentTicket.id,
+        state_id: state.id,
+      });
     }
 
     currentTicket.state = state;
