@@ -49,10 +49,18 @@ export class TelegramService {
     ticketId: number,
     asunto: string,
     usuario: string,
+    prioridad: string,
+    supportMode?: string,
   ): Promise<void> {
     await this.notify({
       emoji: '🎫',
-      texto: `Ticket nuevo #${ticketId}\n<b>${asunto}</b>\nUsuario: ${usuario}`,
+      texto: `
+        Ticket nuevo #${ticketId}
+        <b>${asunto}</b>
+        Usuario: ${usuario}
+        Prioridad: ${prioridad}
+        ${supportMode ? `Modalidad: ${supportMode}` : ''}
+            `.trim(),
       ticketId,
     });
   }

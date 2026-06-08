@@ -55,7 +55,7 @@ export class TicketService {
     return this.ticketRepository.findOneBy({ id });
   }
 
-  async createTicket(body: CreateTicket) {
+  async createTicket(body: CreateTicket, supportMode?: string) {
     const state = await this.stateRepository.findOneBy({ id: body.state_id });
     if (!state) {
       throw new NotFoundException('Estado no encontrado');
@@ -96,6 +96,8 @@ export class TicketService {
       savedTicket.id,
       requestType.long_name,
       user.username,
+      priority.short_name,
+      supportMode,
     );
 
     await this.ticketStateHistory.createTicketStateHistory({

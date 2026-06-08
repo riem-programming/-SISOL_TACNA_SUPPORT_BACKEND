@@ -37,7 +37,10 @@ export class TechnicalSupportRequestService {
       throw new NotFoundException('No existe el modo de soporte');
     }
 
-    const newTicket = await this.ticketService.createTicket(body);
+    const newTicket = await this.ticketService.createTicket(
+      body,
+      supportMode.short_name,
+    );
     if (!newTicket) {
       throw new NotFoundException('Ocurrio un problema al crear el ticket');
     }
