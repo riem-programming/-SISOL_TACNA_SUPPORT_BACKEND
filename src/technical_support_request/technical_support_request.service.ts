@@ -59,9 +59,14 @@ export class TechnicalSupportRequestService {
         speciality: body.speciality,
       });
 
-    return await this.technicalSupportRequestRepository.save(
+    const saved = await this.technicalSupportRequestRepository.save(
       newtechnicalSupportRequest,
     );
+
+    const fullTicket = await this.ticketService.getTicketByIdForAdmin(newTicket.id);
+    if (fullTicket) this.ticketService.emitAdminNewTicket(fullTicket);
+
+    return saved;
   }
 
   async updatetechnicalSupportRequest(body: UpdateTechnicalSupportRequest) {

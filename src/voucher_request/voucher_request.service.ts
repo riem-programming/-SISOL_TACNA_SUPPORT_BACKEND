@@ -65,7 +65,12 @@ export class VoucherRequestService {
       attachment_key: attachmentKey ?? undefined,
     });
 
-    return await this.voucherRequestRepository.save(newVoucherRequest);
+    const saved = await this.voucherRequestRepository.save(newVoucherRequest);
+
+    const fullTicket = await this.ticketService.getTicketByIdForAdmin(newTicket.id);
+    if (fullTicket) this.ticketService.emitAdminNewTicket(fullTicket);
+
+    return saved;
   }
 
   async updatevoucherRequest(body: UpdateVoucherRequest) {

@@ -89,7 +89,12 @@ export class CreateUserRequestService {
       position: body.position,
     });
 
-    return await this.createUserRequestRepository.save(newcreateUserRequest);
+    const saved = await this.createUserRequestRepository.save(newcreateUserRequest);
+
+    const fullTicket = await this.ticketService.getTicketByIdForAdmin(newTicket.id);
+    if (fullTicket) this.ticketService.emitAdminNewTicket(fullTicket);
+
+    return saved;
   }
 
   async updatecreateUserRequest(body: UpdateCreateUserRequest) {
