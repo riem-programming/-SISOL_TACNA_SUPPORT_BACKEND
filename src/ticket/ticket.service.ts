@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
@@ -18,6 +18,7 @@ import { MessageEvent } from '@nestjs/common';
 export class TicketService {
   private readonly ticketStateHistory: TicketStateHistoryService;
   private subjects = new Map<string, Set<Subject<MessageEvent>>>();
+  private adminSubjects = new Set<Subject<MessageEvent>>();
 
   constructor(
     @InjectRepository(Ticket)
@@ -130,9 +131,10 @@ export class TicketService {
     return savedTicket;
   }
 
-  async updateTicket(body: UpdateTicket) {
+  async updateTicket(body: UpdateTicket, userId: number) {
     const currentTicket = await this.getTicketById(body.id);
     if (!currentTicket) return null;
+    if (currentTicket.user_id !== userId) throw new ForbiddenException('No tienes permiso para modificar este ticket');
 
     if (body.state_id !== undefined) {
       const state = await this.stateRepository.findOneBy({ id: body.state_id });
@@ -218,9 +220,10 @@ export class TicketService {
     return await this.ticketRepository.save(currentTicket);
   }
 
-  async deleteTicket(id: number) {
+  async deleteTicket(id: number, userId: number) {
     const currentTicket = await this.getTicketById(id);
     if (!currentTicket) return null;
+    if (currentTicket.user_id !== userId) throw new ForbiddenException('No tienes permiso para eliminar este ticket');
 
     await this.ticketRepository.delete({ id: currentTicket.id });
     return currentTicket;
@@ -274,6 +277,46 @@ export class TicketService {
         }
       };
     });
+  }
+
+  getAdminEventStream(): Observable<MessageEvent> {
+    const subject = new Subject<MessageEvent>();
+    this.adminSubjects.add(subject);
+    return new Observable<MessageEvent>((observer) => {
+      const sub = subject.subscribe(observer);
+      return () => {
+        sub.unsubscribe();
+        this.adminSubjects.delete(subject);
+      };
+    });
+  }
+
+  async getTicketByIdForAdmin(id: number) {
+    const ticket = await this.ticketRepository.findOne({
+      where: { id },
+      relations: [
+        'createUserRequest',
+        'voucherRequest',
+        'technicalSupportRequest',
+        'state',
+        'priority',
+        'request_type',
+        'user',
+      ],
+    });
+    if (!ticket) return null;
+    return {
+      ...ticket,
+      user: ticket.user
+        ? { id: ticket.user.id, username: ticket.user.username, email: ticket.user.email }
+        : null,
+    };
+  }
+
+  emitAdminNewTicket(ticket: unknown): void {
+    for (const subject of this.adminSubjects) {
+      subject.next({ data: { type: 'new_ticket', ticket } });
+    }
   }
 
   protected emitirCambioEstado(

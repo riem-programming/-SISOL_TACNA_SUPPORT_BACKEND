@@ -41,6 +41,15 @@ export class TicketController {
     return this.ticketService.getEventStream(userId);
   }
 
+  @Public()
+  @Sse('admin/events')
+  adminEvents(@Query('key') key: string): Observable<MessageEvent> {
+    if (!key || key !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
+    return this.ticketService.getAdminEventStream();
+  }
+
   @Get('/')
   async getAllTicket(@Request() req) {
     const userId = req.user.sub;
@@ -81,8 +90,8 @@ export class TicketController {
   }
 
   @Put('/')
-  async updateTicket(@Body() body: UpdateTicket) {
-    const updateTicket = await this.ticketService.updateTicket(body);
+  async updateTicket(@Body() body: UpdateTicket, @Request() req) {
+    const updateTicket = await this.ticketService.updateTicket(body, req.user.sub);
     if (!updateTicket) {
       throw new NotFoundException(this.notFoundMessage);
     }
@@ -105,8 +114,8 @@ export class TicketController {
   }
 
   @Delete('/:id')
-  async deleteTicket(@Param('id') id: number) {
-    const deleteTicket = await this.ticketService.deleteTicket(id);
+  async deleteTicket(@Param('id') id: number, @Request() req) {
+    const deleteTicket = await this.ticketService.deleteTicket(id, req.user.sub);
     if (!deleteTicket) {
       throw new NotFoundException(this.notFoundMessage);
     }
