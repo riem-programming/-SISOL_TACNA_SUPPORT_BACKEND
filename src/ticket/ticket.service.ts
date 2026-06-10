@@ -389,9 +389,16 @@ export class TicketService {
     const set = this.subjects.get(userId);
     if (!set) return;
 
-    // Emite a TODOS los dispositivos del usuario
     for (const subject of set) {
       subject.next({ data: { ticket_id: ticketId, state_id: stateId } });
+    }
+  }
+
+  emitMessagesRead(userId: number, ticketId: number): void {
+    const set = this.subjects.get(String(userId));
+    if (!set) return;
+    for (const subject of set) {
+      subject.next({ data: { type: 'messages_read', ticket_id: ticketId } });
     }
   }
 }

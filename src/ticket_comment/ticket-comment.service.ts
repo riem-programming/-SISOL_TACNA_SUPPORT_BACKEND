@@ -74,6 +74,11 @@ export class TicketCommentService {
         type: 'user',
       })
       .execute();
+
+    const ticket = await this.ticketService.getTicketById(ticketId);
+    if (ticket) {
+      this.ticketService.emitMessagesRead(ticket.user_id, ticketId);
+    }
   }
 
   async createAdminComment(dto: CreateAdminTicketCommentDto): Promise<TicketComment> {
