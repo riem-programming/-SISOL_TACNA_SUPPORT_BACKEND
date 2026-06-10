@@ -1,0 +1,75 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TicketComment } from './ticket-comment.entity';
+import { CreateTicketCommentDto } from './dto/create-ticket-comment.dto';
+import { CreateAdminTicketCommentDto } from './dto/create-admin-ticket-comment.dto';
+import { TicketService } from 'src/ticket/ticket.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { User } from 'src/user/user.entity';
+
+@Injectable()
+export class TicketCommentService {
+  constructor(
+    @InjectRepository(TicketComment)
+    private readonly commentRepository: Repository<TicketComment>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly ticketService: TicketService,
+    private readonly telegram: TelegramService,
+  ) {}
+
+  getCommentsByTicketId(ticketId: number): Promise<TicketComment[]> {
+    return this.commentRepository.find({
+      where: { ticket_id: ticketId },
+      relations: ['user'],
+      order: { created_at: 'ASC' },
+      select: {
+        id: true,
+        ticket_id: true,
+        user_id: true,
+        author_type: true,
+        message: true,
+        created_at: true,
+        user: {
+          id: true,
+          username: true,
+        },
+      },
+    });
+  }
+
+  async createUserComment(dto: CreateTicketCommentDto): Promise<TicketComment> {
+    const comment = this.commentRepository.create({
+      ticket_id: dto.ticket_id,
+      user_id: dto.user_id ?? null,
+      author_type: 'user',
+      message: dto.message,
+    });
+    const saved = await this.commentRepository.save(comment);
+    this.ticketService.emitNewComment(saved);
+
+    const user = dto.user_id
+      ? await this.userRepository.findOneBy({ id: dto.user_id })
+      : null;
+    this.telegram.notificarNuevoMensajeChat(
+      dto.ticket_id,
+      user?.username ?? 'Usuario',
+      dto.message,
+    );
+
+    return saved;
+  }
+
+  async createAdminComment(dto: CreateAdminTicketCommentDto): Promise<TicketComment> {
+    const comment = this.commentRepository.create({
+      ticket_id: dto.ticket_id,
+      user_id: null,
+      author_type: 'admin',
+      message: dto.message,
+    });
+    const saved = await this.commentRepository.save(comment);
+    await this.ticketService.emitNewCommentToUser(dto.ticket_id, saved);
+    return saved;
+  }
+}

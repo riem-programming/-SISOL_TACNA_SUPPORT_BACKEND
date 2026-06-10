@@ -20,6 +20,7 @@ import { StorageModule } from './storage/storage.module';
 import { TicketStateHistoryModule } from './ticket_state_history/ticket_state_history.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { AdminModule } from './admin/admin.module';
+import { TicketCommentModule } from './ticket_comment/ticket-comment.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { AdminModule } from './admin/admin.module';
     TicketStateHistoryModule,
     TelegramModule,
     AdminModule,
+    TicketCommentModule,
   ],
   controllers: [],
   providers: [],

@@ -346,6 +346,22 @@ export class TicketService {
     }
   }
 
+  emitNewComment(comment: unknown): void {
+    for (const subject of this.adminSubjects) {
+      subject.next({ data: { type: 'new_comment', comment } });
+    }
+  }
+
+  async emitNewCommentToUser(ticketId: number, comment: unknown): Promise<void> {
+    const ticket = await this.getTicketById(ticketId);
+    if (!ticket) return;
+    const set = this.subjects.get(String(ticket.user_id));
+    if (!set) return;
+    for (const subject of set) {
+      subject.next({ data: { type: 'new_comment', comment } });
+    }
+  }
+
   private emitAdminTicketDeleted(ticketId: number): void {
     for (const subject of this.adminSubjects) {
       subject.next({ data: { type: 'deleted_ticket', ticket_id: ticketId } });

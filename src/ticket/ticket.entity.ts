@@ -15,7 +15,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 @Entity({ name: 'ticket' })
 export class Ticket {
   @PrimaryGeneratedColumn()
@@ -70,4 +69,5 @@ export class Ticket {
 
   @OneToOne(() => TechnicalSupportRequest, (cur) => cur.ticket)
   technicalSupportRequest!: TechnicalSupportRequest;
+
 }
