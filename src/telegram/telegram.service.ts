@@ -91,6 +91,18 @@ export class TelegramService {
     });
   }
 
+  async notificarNuevoMensajeChat(
+    ticketId: number,
+    usuario: string,
+    mensaje: string,
+  ): Promise<void> {
+    await this.notify({
+      emoji: '💬',
+      texto: `Nuevo mensaje en ticket #${ticketId}\nDe: <b>${usuario}</b>\n\n"${mensaje}"`,
+      ticketId,
+    });
+  }
+
   async notificarTicketSinRespuesta(
     ticketId: number,
     asunto: string,
