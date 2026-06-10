@@ -17,7 +17,7 @@ export class TicketStateHistory {
   @Column()
   ticket_id!: number;
 
-  @ManyToOne(() => Ticket, { nullable: false })
+  @ManyToOne(() => Ticket, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ticket_id' })
   ticket!: Ticket;
 
