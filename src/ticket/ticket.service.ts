@@ -246,10 +246,24 @@ export class TicketService {
     const state = await this.stateRepository.findOneBy({ code });
     if (!state) return { deleted: 0 };
 
+    const tickets = await this.ticketRepository.find({
+      where: { state_id: state.id, is_active: true },
+      relations: ['voucherRequest'],
+    });
+
+    if (tickets.length === 0) return { deleted: 0 };
+
+    const attachmentKeys = tickets
+      .map((t) => t.voucherRequest?.attachment_key)
+      .filter((k): k is string => !!k);
+
     const result = await this.ticketRepository.delete({
       state_id: state.id,
       is_active: true,
     });
+
+    await Promise.allSettled(attachmentKeys.map((key) => this.storage.deleteFile(key)));
+
     return { deleted: result.affected ?? 0 };
   }
 
