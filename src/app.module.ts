@@ -19,6 +19,7 @@ import { SupportModeModule } from './support_mode/support_mode.module';
 import { StorageModule } from './storage/storage.module';
 import { TicketStateHistoryModule } from './ticket_state_history/ticket_state_history.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { TelegramModule } from './telegram/telegram.module';
     StorageModule,
     TicketStateHistoryModule,
     TelegramModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],

@@ -51,6 +51,28 @@ export class TicketService {
     });
   }
 
+  async getAllTicketsAdmin() {
+    const tickets = await this.ticketRepository.find({
+      where: { is_active: true },
+      relations: [
+        'createUserRequest',
+        'voucherRequest',
+        'technicalSupportRequest',
+        'state',
+        'priority',
+        'request_type',
+        'user',
+      ],
+      order: { createdAt: 'DESC' },
+    });
+    return tickets.map((ticket) => ({
+      ...ticket,
+      user: ticket.user
+        ? { id: ticket.user.id, username: ticket.user.username, email: ticket.user.email }
+        : null,
+    }));
+  }
+
   getTicketById(id: number) {
     return this.ticketRepository.findOneBy({ id });
   }
@@ -202,6 +224,17 @@ export class TicketService {
 
     await this.ticketRepository.delete({ id: currentTicket.id });
     return currentTicket;
+  }
+
+  async deleteTicketsByStateCode(code: string): Promise<{ deleted: number }> {
+    const state = await this.stateRepository.findOneBy({ code });
+    if (!state) return { deleted: 0 };
+
+    const result = await this.ticketRepository.delete({
+      state_id: state.id,
+      is_active: true,
+    });
+    return { deleted: result.affected ?? 0 };
   }
 
   private async generateUniqueTicketCode(): Promise<string> {

@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   NotFoundException,
   Param,
   Patch,
@@ -12,6 +13,7 @@ import {
   Query,
   Request,
   Sse,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateTicket } from './dto/createTicket.dto';
@@ -43,6 +45,25 @@ export class TicketController {
   async getAllTicket(@Request() req) {
     const userId = req.user.sub;
     return await this.ticketService.getAllTicket(userId);
+  }
+
+  @Get('/admin/all')
+  async getAllTicketsAdmin(@Headers('x-admin-key') adminKey: string) {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
+    return await this.ticketService.getAllTicketsAdmin();
+  }
+
+  @Delete('/admin/clean/:code')
+  async deleteTicketsByStateCode(
+    @Headers('x-admin-key') adminKey: string,
+    @Param('code') code: string,
+  ) {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
+    return await this.ticketService.deleteTicketsByStateCode(code);
   }
 
   @Get('/:id')
