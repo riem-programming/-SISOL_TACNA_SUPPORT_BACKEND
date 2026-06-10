@@ -32,6 +32,7 @@ export class TicketCommentService {
         user_id: true,
         author_type: true,
         message: true,
+        read_at: true,
         created_at: true,
         user: {
           id: true,
@@ -61,6 +62,18 @@ export class TicketCommentService {
     );
 
     return saved;
+  }
+
+  async markAdminRead(ticketId: number): Promise<void> {
+    await this.commentRepository
+      .createQueryBuilder()
+      .update()
+      .set({ read_at: new Date() })
+      .where('ticket_id = :ticketId AND author_type = :type AND read_at IS NULL', {
+        ticketId,
+        type: 'user',
+      })
+      .execute();
   }
 
   async createAdminComment(dto: CreateAdminTicketCommentDto): Promise<TicketComment> {

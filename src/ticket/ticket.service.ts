@@ -12,6 +12,7 @@ import { User } from 'src/user/user.entity';
 import { TicketStateHistoryService } from 'src/ticket_state_history/ticket_state_history.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { StorageService } from 'src/storage/storage.service';
+import { TicketComment } from 'src/ticket_comment/ticket-comment.entity';
 import { Observable, Subject } from 'rxjs';
 import { MessageEvent } from '@nestjs/common';
 
@@ -31,6 +32,8 @@ export class TicketService {
     @InjectRepository(RequestType)
     private requestTypeRepository: Repository<RequestType>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(TicketComment)
+    private ticketCommentRepository: Repository<TicketComment>,
     TicketStateHistory: TicketStateHistoryService,
     private readonly telegram: TelegramService,
     private readonly storage: StorageService,
@@ -130,6 +133,15 @@ export class TicketService {
       state_id: state.id,
       skipPush: true,
     });
+
+    await this.ticketCommentRepository.save(
+      this.ticketCommentRepository.create({
+        ticket_id: savedTicket.id,
+        user_id: null,
+        author_type: 'system',
+        message: `Tu solicitud ${savedTicket.code} fue recibida. Te responderemos en las próximas 24 horas.`,
+      }),
+    );
 
     return savedTicket;
   }

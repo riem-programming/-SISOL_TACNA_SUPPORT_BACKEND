@@ -4,6 +4,7 @@ import {
   Get,
   Headers,
   Param,
+  Patch,
   Post,
   Request,
   UnauthorizedException,
@@ -40,6 +41,18 @@ export class TicketCommentController {
       ...body,
       user_id: req.user.sub,
     });
+  }
+
+  @Public()
+  @Patch('admin/:ticketId/read')
+  markAdminRead(
+    @Headers('x-admin-key') adminKey: string,
+    @Param('ticketId') ticketId: string,
+  ) {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
+    return this.ticketCommentService.markAdminRead(Number(ticketId));
   }
 
   @Public()

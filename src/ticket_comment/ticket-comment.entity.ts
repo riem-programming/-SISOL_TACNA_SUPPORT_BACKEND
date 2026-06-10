@@ -29,10 +29,13 @@ export class TicketComment {
   user!: User | null;
 
   @Column({ type: 'varchar' })
-  author_type!: 'user' | 'admin';
+  author_type!: 'user' | 'admin' | 'system';
 
   @Column({ type: 'text' })
   message!: string;
+
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  read_at!: Date | null;
 
   @CreateDateColumn()
   created_at!: Date;
