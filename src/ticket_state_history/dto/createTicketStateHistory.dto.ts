@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateTicketStateHistory {
   @IsNumber()
@@ -8,4 +8,7 @@ export class CreateTicketStateHistory {
   @IsNumber()
   @IsNotEmpty()
   ticket_id!: number;
+
+  @IsOptional()
+  skipPush?: boolean;
 }

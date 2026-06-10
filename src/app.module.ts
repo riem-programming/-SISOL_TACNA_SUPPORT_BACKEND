@@ -21,6 +21,7 @@ import { TicketStateHistoryModule } from './ticket_state_history/ticket_state_hi
 import { TelegramModule } from './telegram/telegram.module';
 import { AdminModule } from './admin/admin.module';
 import { TicketCommentModule } from './ticket_comment/ticket-comment.module';
+import { PushNotificationModule } from './push_notification/push-notification.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { TicketCommentModule } from './ticket_comment/ticket-comment.module';
     TelegramModule,
     AdminModule,
     TicketCommentModule,
+    PushNotificationModule,
   ],
   controllers: [],
   providers: [],

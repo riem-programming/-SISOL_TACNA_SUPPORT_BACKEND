@@ -6,9 +6,10 @@ import { TicketCommentService } from './ticket-comment.service';
 import { TicketModule } from 'src/ticket/ticket.module';
 import { TelegramModule } from 'src/telegram/telegram.module';
 import { User } from 'src/user/user.entity';
+import { PushNotificationModule } from 'src/push_notification/push-notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TicketComment, User]), TicketModule, TelegramModule],
+  imports: [TypeOrmModule.forFeature([TicketComment, User]), TicketModule, TelegramModule, PushNotificationModule],
   controllers: [TicketCommentController],
   providers: [TicketCommentService],
   exports: [TicketCommentService],

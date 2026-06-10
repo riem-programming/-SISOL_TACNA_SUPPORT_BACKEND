@@ -7,6 +7,7 @@ import { CreateAdminTicketCommentDto } from './dto/create-admin-ticket-comment.d
 import { TicketService } from 'src/ticket/ticket.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { User } from 'src/user/user.entity';
+import { PushNotificationService } from 'src/push_notification/push-notification.service';
 
 @Injectable()
 export class TicketCommentService {
@@ -17,6 +18,7 @@ export class TicketCommentService {
     private readonly userRepository: Repository<User>,
     private readonly ticketService: TicketService,
     private readonly telegram: TelegramService,
+    private readonly pushNotification: PushNotificationService,
   ) {}
 
   getCommentsByTicketId(ticketId: number): Promise<TicketComment[]> {
@@ -70,6 +72,15 @@ export class TicketCommentService {
     });
     const saved = await this.commentRepository.save(comment);
     await this.ticketService.emitNewCommentToUser(dto.ticket_id, saved);
+    const ticket = await this.ticketService.getTicketById(dto.ticket_id);
+    if (ticket) {
+      await this.pushNotification.sendToUser(
+        ticket.user_id,
+        'Nueva respuesta de soporte',
+        dto.message,
+        `/panel/solicitud/${ticket.code}`,
+      );
+    }
     return saved;
   }
 }

@@ -128,6 +128,7 @@ export class TicketService {
     await this.ticketStateHistory.createTicketStateHistory({
       ticket_id: savedTicket.id,
       state_id: state.id,
+      skipPush: true,
     });
 
     return savedTicket;
