@@ -11,6 +11,7 @@ import { generateTicketCode } from './helper/generateTicketCode.helper';
 import { User } from 'src/user/user.entity';
 import { TicketStateHistoryService } from 'src/ticket_state_history/ticket_state_history.service';
 import { TelegramService } from 'src/telegram/telegram.service';
+import { StorageService } from 'src/storage/storage.service';
 import { Observable, Subject } from 'rxjs';
 import { MessageEvent } from '@nestjs/common';
 
@@ -32,6 +33,7 @@ export class TicketService {
     @InjectRepository(User) private userRepository: Repository<User>,
     TicketStateHistory: TicketStateHistoryService,
     private readonly telegram: TelegramService,
+    private readonly storage: StorageService,
   ) {
     this.ticketStateHistory = TicketStateHistory;
   }
@@ -221,11 +223,22 @@ export class TicketService {
   }
 
   async deleteTicket(id: number, userId: number) {
-    const currentTicket = await this.getTicketById(id);
+    const currentTicket = await this.ticketRepository.findOne({
+      where: { id },
+      relations: ['voucherRequest'],
+    });
     if (!currentTicket) return null;
     if (currentTicket.user_id !== userId) throw new ForbiddenException('No tienes permiso para eliminar este ticket');
 
+    const attachmentKey = currentTicket.voucherRequest?.attachment_key ?? null;
+
     await this.ticketRepository.delete({ id: currentTicket.id });
+
+    if (attachmentKey) {
+      await this.storage.deleteFile(attachmentKey).catch(() => null);
+    }
+
+    this.emitAdminTicketDeleted(currentTicket.id);
     return currentTicket;
   }
 
@@ -316,6 +329,12 @@ export class TicketService {
   emitAdminNewTicket(ticket: unknown): void {
     for (const subject of this.adminSubjects) {
       subject.next({ data: { type: 'new_ticket', ticket } });
+    }
+  }
+
+  private emitAdminTicketDeleted(ticketId: number): void {
+    for (const subject of this.adminSubjects) {
+      subject.next({ data: { type: 'deleted_ticket', ticket_id: ticketId } });
     }
   }
 
