@@ -75,6 +75,21 @@ export class TicketController {
     return await this.ticketService.deleteTicketsByStateCode(code);
   }
 
+  @Get('/admin/:id')
+  async getTicketByIdAdmin(
+    @Headers('x-admin-key') adminKey: string,
+    @Param('id') id: string,
+  ) {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
+    const ticket = await this.ticketService.getTicketByIdForAdmin(Number(id));
+    if (!ticket) {
+      throw new NotFoundException(this.notFoundMessage);
+    }
+    return ticket;
+  }
+
   @Get('/:id')
   async getTicketById(@Param('id') id: string) {
     const currentTicket = await this.ticketService.getTicketById(Number(id));
