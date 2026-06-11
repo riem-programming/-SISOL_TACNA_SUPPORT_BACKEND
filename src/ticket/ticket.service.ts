@@ -401,4 +401,10 @@ export class TicketService {
       subject.next({ data: { type: 'messages_read', ticket_id: ticketId } });
     }
   }
+
+  emitMessagesReadToAdmin(ticketId: number): void {
+    for (const subject of this.adminSubjects) {
+      subject.next({ data: { type: 'messages_read', ticket_id: ticketId } });
+    }
+  }
 }

@@ -81,6 +81,19 @@ export class TicketCommentService {
     }
   }
 
+  async markUserRead(ticketId: number): Promise<void> {
+    await this.commentRepository
+      .createQueryBuilder()
+      .update()
+      .set({ read_at: new Date() })
+      .where('ticket_id = :ticketId AND author_type = :type AND read_at IS NULL', {
+        ticketId,
+        type: 'admin',
+      })
+      .execute();
+    this.ticketService.emitMessagesReadToAdmin(ticketId);
+  }
+
   async createAdminComment(dto: CreateAdminTicketCommentDto): Promise<TicketComment> {
     const comment = this.commentRepository.create({
       ticket_id: dto.ticket_id,

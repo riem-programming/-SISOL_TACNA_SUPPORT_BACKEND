@@ -43,6 +43,11 @@ export class TicketCommentController {
     });
   }
 
+  @Patch(':ticketId/read')
+  markUserRead(@Param('ticketId') ticketId: string) {
+    return this.ticketCommentService.markUserRead(Number(ticketId));
+  }
+
   @Public()
   @Patch('admin/:ticketId/read')
   markAdminRead(
