@@ -115,9 +115,13 @@ export class TicketController {
 
   @Patch('/:id/state')
   async updateTicketState(
+    @Headers('x-admin-key') adminKey: string,
     @Param('id') id: number,
     @Body() body: UpdateTicketState,
   ) {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      throw new UnauthorizedException('Acceso no autorizado');
+    }
     const updatedTicket = await this.ticketService.updateTicketState(
       Number(id),
       body.state_id,
