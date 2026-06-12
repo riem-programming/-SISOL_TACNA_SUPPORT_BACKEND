@@ -139,7 +139,7 @@ export class TicketService {
         ticket_id: savedTicket.id,
         user_id: null,
         author_type: 'system',
-        message: `Tu solicitud ${savedTicket.code} fue recibida. Te responderemos en las próximas 24 horas.`,
+        message: `Tu solicitud ${savedTicket.code} fue recibida. Te responderemos en los próximos minutos.`,
       }),
     );
 
