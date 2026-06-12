@@ -22,6 +22,7 @@ import { TelegramModule } from './telegram/telegram.module';
 import { AdminModule } from './admin/admin.module';
 import { TicketCommentModule } from './ticket_comment/ticket-comment.module';
 import { PushNotificationModule } from './push_notification/push-notification.module';
+import { TicketReassignRequestModule } from './ticket_reassign_request/ticket_reassign_request.module';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { PushNotificationModule } from './push_notification/push-notification.mo
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        synchronize: configService.get<string>('NODE_ENV') !== 'production',
       }),
     }),
     DocumentTypeModule,
@@ -63,6 +64,7 @@ import { PushNotificationModule } from './push_notification/push-notification.mo
     AdminModule,
     TicketCommentModule,
     PushNotificationModule,
+    TicketReassignRequestModule,
   ],
   controllers: [],
   providers: [],
