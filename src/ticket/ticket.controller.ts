@@ -43,8 +43,8 @@ export class TicketController {
 
   @Public()
   @Sse('admin/events')
-  adminEvents(@Query('key') key: string): Observable<MessageEvent> {
-    if (!key || key !== process.env.ADMIN_KEY) {
+  adminEvents(@Headers('x-admin-key') adminKey: string): Observable<MessageEvent> {
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
       throw new UnauthorizedException('Acceso no autorizado');
     }
     return this.ticketService.getAdminEventStream();
