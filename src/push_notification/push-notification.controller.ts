@@ -21,12 +21,6 @@ export class PushNotificationController {
     );
   }
 
-  @Public()
-  @Get('debug')
-  async debug(): Promise<any> {
-    return this.pushNotificationService.debugSubscriptions();
-  }
-
   @Delete('unsubscribe')
   @HttpCode(200)
   async unsubscribe(
