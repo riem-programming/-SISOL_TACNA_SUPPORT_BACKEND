@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Put,
-  Query,
   Request,
   Sse,
   UnauthorizedException,
@@ -34,11 +33,8 @@ export class TicketController {
   private notFoundMessage = 'No existe el ticket';
 
   @Sse('events')
-  ticketEvents(
-    @Query('userId') userId: string,
-    @Query('token') _token: string,
-  ): Observable<MessageEvent> {
-    return this.ticketService.getEventStream(userId);
+  ticketEvents(@Request() req): Observable<MessageEvent> {
+    return this.ticketService.getEventStream(String(req.user.sub));
   }
 
   @Public()
