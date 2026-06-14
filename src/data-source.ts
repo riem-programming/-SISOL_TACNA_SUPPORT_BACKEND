@@ -1,7 +1,9 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
+}
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
