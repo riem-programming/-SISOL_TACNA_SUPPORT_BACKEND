@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 
 @Controller('admin')
 export class AdminController {
-  @Throttle({ default: { ttl: 900000, limit: 5 } })
+  @Throttle({ default: { ttl: 300000, limit: 10 } })
   @Public()
   @Post('verify')
   verifyKey(@Body() body: { key: string }): { valid: boolean } {
