@@ -49,6 +49,13 @@ export async function seedRequestType(dataSource: DataSource) {
     //   is_active: true,
     // },
     {
+      short_name: 'Cambio responsable',
+      long_name: 'Solicitud de cambio de responsable de atención de ticket',
+      code: 'TICKET_REASSIGN',
+      emoji: '🔄',
+      is_active: true,
+    },
+    {
       short_name: 'Problema sistema',
       long_name: 'Incidencias o fallas del sistema',
       code: 'SYSTEM_ISSUE',
