@@ -13,7 +13,8 @@ import { TicketStateHistoryService } from 'src/ticket_state_history/ticket_state
 import { TelegramService } from 'src/telegram/telegram.service';
 import { StorageService } from 'src/storage/storage.service';
 import { TicketComment } from 'src/ticket_comment/ticket-comment.entity';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, interval, merge } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MessageEvent } from '@nestjs/common';
 
 @Injectable()
@@ -292,10 +293,13 @@ export class TicketService {
     return code;
   }
 
+  private readonly ping$: Observable<MessageEvent> = interval(25000).pipe(
+    map(() => ({ data: { type: 'ping' } }) as MessageEvent),
+  );
+
   getEventStream(userId: string): Observable<MessageEvent> {
     const subject = new Subject<MessageEvent>();
 
-    // Agrega al Set existente o crea uno nuevo
     if (!this.subjects.has(userId)) {
       this.subjects.set(userId, new Set());
     }
@@ -306,10 +310,9 @@ export class TicketService {
     );
 
     return new Observable<MessageEvent>((observer) => {
-      const sub = subject.subscribe(observer);
+      const sub = merge(subject.asObservable(), this.ping$).subscribe(observer);
       return () => {
         sub.unsubscribe();
-        // Elimina solo este subject, no todos los del usuario
         const set = this.subjects.get(userId);
         if (set) {
           set.delete(subject);
@@ -323,7 +326,7 @@ export class TicketService {
     const subject = new Subject<MessageEvent>();
     this.adminSubjects.add(subject);
     return new Observable<MessageEvent>((observer) => {
-      const sub = subject.subscribe(observer);
+      const sub = merge(subject.asObservable(), this.ping$).subscribe(observer);
       return () => {
         sub.unsubscribe();
         this.adminSubjects.delete(subject);
