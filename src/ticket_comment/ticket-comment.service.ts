@@ -109,7 +109,7 @@ export class TicketCommentService {
         ticket.user_id,
         'Nueva respuesta de soporte',
         dto.message,
-        `/panel/solicitud/${ticket.code}`,
+        `/panel/solicitud/${ticket.code}/chat`,
       );
     }
     return saved;
