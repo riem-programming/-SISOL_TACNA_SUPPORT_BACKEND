@@ -11,6 +11,7 @@ export class TelegramService {
   private readonly chatId: string;
   private readonly apiUrl: string;
   private readonly enabled: boolean;
+  private readonly frontendUrl: string;
 
   constructor(
     private readonly config: ConfigService,
@@ -18,6 +19,7 @@ export class TelegramService {
   ) {
     this.token = this.config.get<string>('TELEGRAM_BOT_TOKEN', '');
     this.chatId = this.config.get<string>('TELEGRAM_CHAT_ID', '');
+    this.frontendUrl = this.config.get<string>('FRONTEND_URL', '');
     this.apiUrl = `https://api.telegram.org/bot${this.token}`;
     this.enabled = !!(this.token && this.chatId);
 
@@ -52,15 +54,10 @@ export class TelegramService {
     prioridad: string,
     supportMode?: string,
   ): Promise<void> {
+    const url = `${this.frontendUrl}/admin/ticket/${ticketId}`;
     await this.notify({
       emoji: '🎫',
-      texto: `
-        Ticket nuevo #${ticketId}
-        <b>${asunto}</b>
-        Usuario: ${usuario}
-        Prioridad: ${prioridad}
-        ${supportMode ? `Modalidad: ${supportMode}` : ''}
-            `.trim(),
+      texto: `Ticket nuevo #${ticketId}\n<b>${asunto}</b>\nUsuario: ${usuario}\nPrioridad: ${prioridad}${supportMode ? `\nModalidad: ${supportMode}` : ''}\n<a href="${url}">${url}</a>`,
       ticketId,
     });
   }
@@ -96,9 +93,10 @@ export class TelegramService {
     usuario: string,
     mensaje: string,
   ): Promise<void> {
+    const url = `${this.frontendUrl}/admin/ticket/${ticketId}/chat`;
     await this.notify({
       emoji: '💬',
-      texto: `Nuevo mensaje en ticket #${ticketId}\nDe: <b>${usuario}</b>\n\n"${mensaje}"`,
+      texto: `Nuevo mensaje ticket #${ticketId}\nDe: <b>${usuario}</b>\n\n"${mensaje}"\n<a href="${url}">${url}</a>`,
       ticketId,
     });
   }
