@@ -30,7 +30,7 @@ export class TicketStateHistoryService {
       await this.pushNotification.sendToUser(
         ticket.user_id,
         'Estado de tu ticket actualizado',
-        `Tu solicitud #${body.ticket_id} cambió de estado`,
+        `Tu solicitud ${ticket.code} cambió de estado`,
         `/panel/solicitud/${ticket.code}`,
       );
     }
