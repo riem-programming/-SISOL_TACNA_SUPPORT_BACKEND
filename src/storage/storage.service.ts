@@ -10,6 +10,11 @@ import { v4 as uuid } from 'uuid';
 import * as path from 'path';
 import multer from 'multer';
 import { getSignedUrl as generatePresignedUrl } from '@aws-sdk/s3-request-presigner';
+import sharp from 'sharp';
+import { PageSizes, PDFDocument } from 'pdf-lib';
+
+const CONVERTIBLE_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const PAGE_MARGIN = 36; // 0.5in, en puntos PDF
 
 @Injectable()
 export class StorageService {
@@ -36,20 +41,62 @@ export class StorageService {
     file: Express.Multer.File,
     folder = 'vouchers',
   ): Promise<string> {
-    const ext = path.extname(file.originalname);
+    let body: Buffer = file.buffer;
+    let contentType = file.mimetype;
+    let ext = path.extname(file.originalname);
+
+    if (CONVERTIBLE_IMAGE_TYPES.includes(file.mimetype)) {
+      body = await this.imageToPdf(file.buffer);
+      contentType = 'application/pdf';
+      ext = '.pdf';
+    }
+
     const key = `${folder}/${uuid()}${ext}`;
 
     await this.s3.send(
       new PutObjectCommand({
         Bucket: this.bucket,
         Key: key,
-        Body: file.buffer,
-        ContentType: file.mimetype,
+        Body: body,
+        ContentType: contentType,
       }),
     );
 
     return key;
     // return `${this.publicUrl}/${this.bucket}/${key}`;
+  }
+
+  private async imageToPdf(input: Buffer): Promise<Buffer> {
+    const jpeg = await sharp(input)
+      .rotate() // respeta la orientación EXIF antes de aplanar
+      .flatten({ background: '#ffffff' }) // png/webp con transparencia -> fondo blanco
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    const { width, height } = await sharp(jpeg).metadata();
+    if (!width || !height) {
+      throw new Error('No se pudo leer las dimensiones de la imagen');
+    }
+
+    const pdfDoc = await PDFDocument.create();
+    const [pageWidth, pageHeight] = PageSizes.A4;
+    const page = pdfDoc.addPage([pageWidth, pageHeight]);
+    const image = await pdfDoc.embedJpg(jpeg);
+
+    const maxWidth = pageWidth - PAGE_MARGIN * 2;
+    const maxHeight = pageHeight - PAGE_MARGIN * 2;
+    const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+    const drawWidth = width * scale;
+    const drawHeight = height * scale;
+
+    page.drawImage(image, {
+      x: (pageWidth - drawWidth) / 2,
+      y: (pageHeight - drawHeight) / 2,
+      width: drawWidth,
+      height: drawHeight,
+    });
+
+    return Buffer.from(await pdfDoc.save());
   }
 
   // En el método:
