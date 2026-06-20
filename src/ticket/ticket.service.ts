@@ -51,6 +51,9 @@ export class TicketService {
       where: { user_id: userId, is_active: true },
       relations: [
         'createUserRequest',
+        'createUserRequest.document_type',
+        'createUserRequest.contract_type',
+        'createUserRequest.system_roles',
         'voucherRequest',
         'technicalSupportRequest',
         'ticketReassignRequest',
@@ -64,6 +67,9 @@ export class TicketService {
       where: { is_active: true },
       relations: [
         'createUserRequest',
+        'createUserRequest.document_type',
+        'createUserRequest.contract_type',
+        'createUserRequest.system_roles',
         'voucherRequest',
         'technicalSupportRequest',
         'ticketReassignRequest',
@@ -341,6 +347,9 @@ export class TicketService {
       where: { id },
       relations: [
         'createUserRequest',
+        'createUserRequest.document_type',
+        'createUserRequest.contract_type',
+        'createUserRequest.system_roles',
         'voucherRequest',
         'technicalSupportRequest',
         'ticketReassignRequest',
