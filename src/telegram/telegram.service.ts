@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TelegramMessage } from './model/telegram.model';
+import { TelegramBoton, TelegramMessage } from './model/telegram.model';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class TelegramService {
     const texto = this.formatear(mensaje);
 
     try {
-      await this.enviarConReintento(texto, 2);
+      await this.enviarConReintento(texto, mensaje.boton, 2);
     } catch (error) {
       // Loguea pero NO propaga — el ticket ya se guardó en Postgres
       this.logger.error(
@@ -57,8 +57,9 @@ export class TelegramService {
     const url = `${this.frontendUrl}/admin/ticket/${ticketId}`;
     await this.notify({
       emoji: '🎫',
-      texto: `Ticket nuevo #${ticketId}\n<b>${asunto}</b>\nUsuario: ${usuario}\nPrioridad: ${prioridad}${supportMode ? `\nModalidad: ${supportMode}` : ''}\n<a href="${url}">${url}</a>`,
+      texto: `Ticket nuevo #${ticketId}\n<b>${asunto}</b>\nUsuario: ${usuario}\nPrioridad: ${prioridad}${supportMode ? `\nModalidad: ${supportMode}` : ''}`,
       ticketId,
+      boton: { texto: 'Ver ticket', url },
     });
   }
 
@@ -96,8 +97,9 @@ export class TelegramService {
     const url = `${this.frontendUrl}/admin/ticket/${ticketId}/chat`;
     await this.notify({
       emoji: '💬',
-      texto: `Nuevo mensaje ticket #${ticketId}\nDe: <b>${usuario}</b>\n\n"${mensaje}"\n<a href="${url}">${url}</a>`,
+      texto: `Nuevo mensaje ticket #${ticketId}\nDe: <b>${usuario}</b>\n\n"${mensaje}"`,
       ticketId,
+      boton: { texto: 'Ver chat', url },
     });
   }
 
@@ -116,6 +118,7 @@ export class TelegramService {
   // Envío con reintentos simples
   private async enviarConReintento(
     texto: string,
+    boton: TelegramBoton | undefined,
     intentosRestantes: number,
   ): Promise<void> {
     try {
@@ -125,6 +128,9 @@ export class TelegramService {
           text: texto,
           parse_mode: 'HTML',
           disable_web_page_preview: true,
+          reply_markup: boton
+            ? { inline_keyboard: [[{ text: boton.texto, url: boton.url }]] }
+            : undefined,
         }),
       );
     } catch (error) {
@@ -133,7 +139,7 @@ export class TelegramService {
           `Reintentando envío Telegram (${intentosRestantes} intentos restantes)`,
         );
         await this.sleep(1000);
-        return this.enviarConReintento(texto, intentosRestantes - 1);
+        return this.enviarConReintento(texto, boton, intentosRestantes - 1);
       }
       throw error;
     }
