@@ -53,6 +53,7 @@ export class TicketService {
         'createUserRequest',
         'voucherRequest',
         'technicalSupportRequest',
+        'ticketReassignRequest',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -65,6 +66,7 @@ export class TicketService {
         'createUserRequest',
         'voucherRequest',
         'technicalSupportRequest',
+        'ticketReassignRequest',
         'state',
         'priority',
         'request_type',
@@ -341,6 +343,7 @@ export class TicketService {
         'createUserRequest',
         'voucherRequest',
         'technicalSupportRequest',
+        'ticketReassignRequest',
         'state',
         'priority',
         'request_type',
